@@ -1,92 +1,76 @@
 "use strict";
 
-var canvas, ctx;
 var requestID;
-
-	canvas = document.getElementById('canvas');
-	ctx = canvas.getContext('2d');
-	// this.add = function(...arr){
-	// 	for ( var i = 0; i < arr.length; i++ ) {
-	// 		arr[i].draw();
-	// 	}
-	// }
-  
-
-	//;
-
-
-
+var timerId;
 const btnStart = document.querySelector(".btn-start");
+const btnStop = document.querySelector(".btn-stop");
 const score = document.querySelector("#score");
-
- 
-btnStart.onclick = function() {	
-
-	for (var i = 0; i < 3; i++) fillWebsitePlaceFilter(i);
+let w, h;
+var color = ["#FB000D", "#810051", "#FFDF00", "#58E000", "#3515B0"];
+var arrRect = [];
 
 
-	//requestID = requestAnimationFrame(animate, ctx);		
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+w = canvas.width = 800;
+h = canvas.height = 600;
+var widthRect = 20;
+var heightRect = 20;
+
+let Rect = function(){ 
+	this.x = Math.round(0 + Math.random() * (w - widthRect - 0 + 1)); 
+	this.y = Math.round(0 + Math.random() * (h - heightRect - 0 + 1));;
+	this.speed = 0.1 + Math.random() * 1; 
+	this.color =  Math.floor(Math.random() * color.length);
+	this.color = color[this.color];
+	this.update = function(){ 
+		this.y += this.speed;  
+	};
+	this.draw = function(){ 
+		ctx.beginPath();
+		ctx.fillRect( this.x, this.y, widthRect, heightRect);
+		ctx.fillStyle = this.color;
+		ctx.fill();
+		ctx.closePath();  
+	};
 };
 
-
-		
-		
-	
-	
-		//console.log(randColor);
-		var color = ["blue", "red", "black", "green", "gray"];
-	function fillWebsitePlaceFilter(){
-		 console.log(1);
-		 
-		var randColor = 0 ;	
-		var width = 20;
-		var height = 20;
-		var posY = 0;
-		var pixelsPerFrame = 1; 
-		
-		var posX = Math.round(0 + Math.random() * (canvas.offsetWidth - width - 0 + 1));
-		posY = Math.round(0 + Math.random() * (canvas.offsetHeight - height - 0 + 1));
-		randColor = Math.floor(Math.random() * color.length);
-		console.log(randColor);
-		console.log(color[randColor]);
-		ctx.fillRect( posX, posY, width, height);
-		ctx.fillStyle = color[randColor];
-		ctx.fill();
-		
-		
-		function animate() {
-			
-				//console.log(posY);
-			if (posY <= (canvas.height - height)) {
-			ctx.clearRect(posX, (posY - pixelsPerFrame), width, height);
-			ctx.fillRect(posX, posY, width, height);
-			posY += pixelsPerFrame;
-
-			
-			canvas.onclick = function() {
-				var x = event.clientX;
-				var y = event.clientY;
-				console.log(y);
-				console.log(posY);
-				if(x == posX && y == posY){
-					console.log(score.innerHTML);
-				}
-			}
-
-
-
-			}else {
-	 			cancelAnimationFrame(requestID);
-			}
-			window.requestAnimationFrame(animate);
-		}
-
-
-	animate();
+function setup(){ 
+	timerId = setInterval(function() {
+		arrRect.push( new Rect() );
+	}, 1000);
+	window.requestAnimationFrame(loop);
 }
 
-	
+canvas.addEventListener("click", (event) => {
+	var xOffset = event.offsetX;
+	var yOffset = event.offsetY;
+	arrRect.forEach(function(element, i) {
+		if (yOffset > element.y && yOffset < element.y + heightRect && xOffset > element.x && xOffset < element.x + widthRect) {
+			arrRect.splice(i, 1);
+			score.innerHTML = +score.innerHTML + 1;
+		}
+	})
+});
 
-		
+function loop(){ 
+	window.requestAnimationFrame(loop);
+	ctx.clearRect(0,0,w,h);
+	for (let i = 0; i < arrRect.length; i++){
+		arrRect[i].update();
+		arrRect[i].draw();
+	}
+}
 
+btnStart.onclick = function() {	
+	clearInterval(timerId);
+	score.innerHTML = 0;
+	arrRect = [];
+	setup();
+};
+
+btnStop.onclick = function() {
+	clearInterval(timerId);
+	arrRect = [];
+}
 
