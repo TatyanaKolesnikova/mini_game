@@ -19,7 +19,7 @@ var heightRect = 20;
 
 let Rect = function(){ 
 	this.x = Math.round(0 + Math.random() * (w - widthRect - 0 + 1)); 
-	this.y = Math.round(0 + Math.random() * (h - heightRect - 0 + 1));;
+	this.y = 0;
 	this.speed = 0.1 + Math.random() * 1; 
 	this.color =  Math.floor(Math.random() * color.length);
 	this.color = color[this.color];
